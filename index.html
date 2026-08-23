@@ -176,8 +176,66 @@ button,input{font:inherit}
     border-radius:16px;background:rgba(30,4,11,.55);text-align:center
 }
 .musicBox h3{font-family:Cinzel,serif;color:#f6d66b;font-size:17px;margin-bottom:10px}
-audio{width:100%;height:35px}
 .musicStatus{font-size:10px;color:#bbb;margin-top:8px}
+
+/* ===== REPRODUCTOR PERSONALIZADO ===== */
+.player{
+    display:flex;align-items:center;gap:14px;
+    padding:12px 16px;border-radius:50px;
+    background:linear-gradient(145deg,rgba(45,6,15,.9),rgba(9,2,6,.95));
+    border:1px solid rgba(246,214,107,.45);
+}
+.playBtn{
+    flex-shrink:0;width:46px;height:46px;border-radius:50%;
+    background:linear-gradient(145deg,#f6d66b,#e0a83f);
+    border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 14px rgba(246,214,107,.4);transition:.25s;
+}
+.playBtn:hover{transform:scale(1.08);box-shadow:0 0 20px rgba(246,214,107,.6)}
+.playBtn:active{transform:scale(.94)}
+.playBtn svg{width:18px;height:18px;fill:#26050d}
+.playBtn .iconPause{display:none}
+.playBtn.playing .iconPlay{display:none}
+.playBtn.playing .iconPause{display:block}
+
+.playerMid{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
+
+.visualizer{
+    width:100%;height:34px;display:flex;align-items:flex-end;justify-content:space-between;gap:2px;
+    cursor:pointer;
+}
+.visualizer .bar{
+    flex:1;min-width:2px;border-radius:3px 3px 0 0;
+    background:linear-gradient(180deg,#f6d66b,#a83a52);
+    height:4px;transition:height .09s ease;
+    opacity:.55;
+}
+.visualizer .bar.played{opacity:1}
+
+.playerTimes{display:flex;justify-content:space-between;font-size:9px;color:#c9b8bb;letter-spacing:.5px}
+.playerTimes span{font-variant-numeric:tabular-nums}
+
+.volWrap{flex-shrink:0;display:flex;align-items:center;gap:6px}
+.volBtn{background:none;border:none;cursor:pointer;padding:4px}
+.volBtn svg{width:16px;height:16px;fill:#f6d66b}
+.volSlider{
+    width:60px;height:3px;-webkit-appearance:none;appearance:none;
+    background:rgba(246,214,107,.3);border-radius:3px;outline:none;cursor:pointer;
+}
+.volSlider::-webkit-slider-thumb{
+    -webkit-appearance:none;width:10px;height:10px;border-radius:50%;
+    background:#f6d66b;box-shadow:0 0 6px rgba(246,214,107,.7);
+}
+.volSlider::-moz-range-thumb{
+    width:10px;height:10px;border-radius:50%;border:none;
+    background:#f6d66b;box-shadow:0 0 6px rgba(246,214,107,.7);
+}
+
+@media(max-width:450px){
+    .player{padding:10px 12px;gap:10px}
+    .playBtn{width:40px;height:40px}
+    .volWrap{display:none}
+}
 
 .photoManager{
     margin-top:25px;padding:16px;border:1px solid rgba(246,214,107,.3);border-radius:16px;
@@ -306,10 +364,34 @@ audio{width:100%;height:35px}
 
         <div class="musicBox" style="margin-top:25px">
             <h3>🎵 Una canción especial de usted</h3>
-            <audio id="audio" loop controls playsinline webkit-playsinline>
+
+            <audio id="audio" loop playsinline webkit-playsinline preload="auto">
                 <source src="musica/cancion.mp3" type="audio/mpeg">
                 <!-- Asegúrate que la carpeta se llame exactamente "musica" (sin tilde) -->
-          </audio>
+            </audio>
+
+            <div class="player">
+                <button class="playBtn" id="playBtn" onclick="togglePlay()" aria-label="Reproducir">
+                    <svg class="iconPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg class="iconPause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+                </button>
+
+                <div class="playerMid">
+                    <div class="visualizer" id="visualizer"></div>
+                    <div class="playerTimes">
+                        <span id="timeCurrent">0:00</span>
+                        <span id="timeTotal">0:00</span>
+                    </div>
+                </div>
+
+                <div class="volWrap">
+                    <button class="volBtn" onclick="toggleMute()" id="volBtn" aria-label="Silenciar">
+                        <svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                    </button>
+                    <input type="range" class="volSlider" id="volSlider" min="0" max="100" value="50" oninput="setVolume(this.value)">
+                </div>
+            </div>
+
             <div class="musicStatus" id="musicStatus">
                 🎶 Esta canción estará sonando de fondo durante su sorpresa ❤️
             </div>
@@ -502,6 +584,7 @@ function unlockAudio(){
     if(audioUnlocked) return;
     const audio = document.getElementById("audio");
     if(!audio) return;
+    initAudioContext(); // el AudioContext también necesita un gesto real del usuario
     audio.muted = true;
     const p = audio.play();
     if(p !== undefined){
@@ -555,15 +638,7 @@ function checkPin(){
         document.getElementById("mainScreen").classList.add("active");
 
         // Iniciar la canción automáticamente al desbloquear la página.
-        const audio = document.getElementById("audio");
-        audio.volume = 0.5;
-        audio.play().then(()=>{
-            document.getElementById("musicStatus").innerHTML =
-            "🎶 Esta canción estará sonando de fondo durante su sorpresa ❤️";
-        }).catch(() => {
-            document.getElementById("musicStatus").innerHTML =
-            "🎵 Toca el botón ▶ para iniciar la canción";
-        });
+        playAudio();
         burstHearts();
 
     }else{
@@ -750,6 +825,168 @@ function escapeHtml(text){
     const div=document.createElement("div");
     div.textContent=text;
     return div.innerHTML;
+}
+
+
+/* =====================================================
+   REPRODUCTOR PERSONALIZADO CON VISUALIZADOR ANIMADO
+   ===================================================== */
+const audioEl   = document.getElementById("audio");
+const playBtn   = document.getElementById("playBtn");
+const visualizer= document.getElementById("visualizer");
+const timeCurrentEl = document.getElementById("timeCurrent");
+const timeTotalEl   = document.getElementById("timeTotal");
+const volSlider = document.getElementById("volSlider");
+const volBtn    = document.getElementById("volBtn");
+const musicStatus = document.getElementById("musicStatus");
+
+const BAR_COUNT = 42;
+let bars = [];
+let audioCtx, analyser, sourceNode, dataArray;
+let rafId = null;
+let lastVolume = 0.5;
+
+// Crear las barras del visualizador
+for(let i=0;i<BAR_COUNT;i++){
+    const b=document.createElement("div");
+    b.className="bar";
+    visualizer.appendChild(b);
+    bars.push(b);
+}
+
+audioEl.volume = 0.5;
+
+function initAudioContext(){
+    if(audioCtx) return;
+    try{
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 128;
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+        sourceNode = audioCtx.createMediaElementSource(audioEl);
+        sourceNode.connect(analyser);
+        analyser.connect(audioCtx.destination);
+    }catch(e){
+        // Si el navegador no soporta Web Audio API, seguimos sin visualizador real
+        audioCtx = null;
+    }
+}
+
+function formatTime(sec){
+    if(!isFinite(sec)) return "0:00";
+    const m = Math.floor(sec/60);
+    const s = Math.floor(sec%60).toString().padStart(2,"0");
+    return `${m}:${s}`;
+}
+
+function playAudio(){
+    initAudioContext();
+    if(audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+    const p = audioEl.play();
+    if(p !== undefined){
+        p.then(()=>{
+            musicStatus.innerHTML = "🎶 Esta canción estará sonando de fondo durante su sorpresa ❤️";
+        }).catch(()=>{
+            musicStatus.innerHTML = "🎵 Toca el botón ▶ para iniciar la canción";
+        });
+    }
+}
+
+function togglePlay(){
+    initAudioContext();
+    if(audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+    if(audioEl.paused){
+        playAudio();
+    }else{
+        audioEl.pause();
+    }
+}
+
+audioEl.addEventListener("play",()=>{
+    playBtn.classList.add("playing");
+    playBtn.setAttribute("aria-label","Pausar");
+    drawVisualizer();
+});
+audioEl.addEventListener("pause",()=>{
+    playBtn.classList.remove("playing");
+    playBtn.setAttribute("aria-label","Reproducir");
+    cancelAnimationFrame(rafId);
+    idleVisualizer();
+});
+audioEl.addEventListener("loadedmetadata",()=>{
+    timeTotalEl.textContent = formatTime(audioEl.duration);
+});
+audioEl.addEventListener("timeupdate",()=>{
+    timeCurrentEl.textContent = formatTime(audioEl.currentTime);
+    if(!audioCtx || audioEl.paused){
+        updateProgressStatic();
+    }
+});
+
+// Visualizador animado sincronizado con el audio real
+function drawVisualizer(){
+    rafId = requestAnimationFrame(drawVisualizer);
+
+    if(analyser){
+        analyser.getByteFrequencyData(dataArray);
+        const step = Math.floor(dataArray.length / BAR_COUNT) || 1;
+        for(let i=0;i<BAR_COUNT;i++){
+            const val = dataArray[i*step] || 0;
+            const h = Math.max(4, (val/255)*34);
+            bars[i].style.height = h+"px";
+        }
+    }else{
+        // Fallback: animación decorativa si Web Audio no está disponible
+        bars.forEach(b=>{
+            b.style.height = (4 + Math.random()*26) + "px";
+        });
+    }
+    updateProgressStatic();
+}
+
+function idleVisualizer(){
+    bars.forEach(b=>{ b.style.height="4px"; });
+}
+
+function updateProgressStatic(){
+    if(!audioEl.duration) return;
+    const ratio = audioEl.currentTime / audioEl.duration;
+    const activeCount = Math.floor(ratio * BAR_COUNT);
+    bars.forEach((b,i)=>{ b.classList.toggle("played", i < activeCount); });
+}
+
+// Click/arrastre en el visualizador para buscar (seek)
+function seekFromEvent(e){
+    if(!audioEl.duration) return;
+    const rect = visualizer.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    audioEl.currentTime = ratio * audioEl.duration;
+    updateProgressStatic();
+}
+visualizer.addEventListener("click", seekFromEvent);
+visualizer.addEventListener("touchstart", seekFromEvent, {passive:true});
+
+// Volumen
+function setVolume(val){
+    const v = val/100;
+    audioEl.volume = v;
+    lastVolume = v;
+    updateVolIcon(v);
+}
+function toggleMute(){
+    if(audioEl.volume > 0){
+        lastVolume = audioEl.volume;
+        audioEl.volume = 0;
+        volSlider.value = 0;
+    }else{
+        audioEl.volume = lastVolume || 0.5;
+        volSlider.value = Math.round(audioEl.volume*100);
+    }
+    updateVolIcon(audioEl.volume);
+}
+function updateVolIcon(v){
+    volBtn.style.opacity = v===0 ? .45 : 1;
 }
 </script>
 </body>
