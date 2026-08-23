@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feliz Cumpleaños 🎂❤️</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+    min-height:100vh;
+    background:#020104;
+    color:#fff;
+    font-family:Poppins,sans-serif;
+    overflow-x:hidden;
+}
+button,input{font:inherit}
+
+#stars{
+    position:fixed;inset:0;z-index:-5;overflow:hidden;
+    background:
+      radial-gradient(circle at 20% 20%,rgba(255,215,120,.10),transparent 24%),
+      radial-gradient(circle at 80% 70%,rgba(255,50,110,.09),transparent 25%),
+      #020104;
+}
+.star{
+    position:absolute;width:2px;height:2px;border-radius:50%;
+    background:#fff;animation:twinkle 3s ease-in-out infinite;
+}
+@keyframes twinkle{0%,100%{opacity:.15}50%{opacity:1;transform:scale(1.5)}}
+
+#loader{
+    position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;
+    background:#050107;transition:opacity .8s,visibility .8s;
+}
+#loader.hide{opacity:0;visibility:hidden}
+.loaderBox{text-align:center}
+.loaderHeart{font-size:62px;animation:pulse 1.2s infinite}
+.loaderBox h2{font-family:Cinzel,serif;color:#f6d66b;letter-spacing:3px;margin-top:10px}
+.loaderLine{width:210px;height:2px;background:#32151d;margin:18px auto;overflow:hidden}
+.loaderLine span{display:block;height:100%;width:0;background:#f6d66b;animation:load 1.8s forwards}
+@keyframes load{to{width:100%}}
+@keyframes pulse{50%{transform:scale(1.12)}}
+
+.screen{display:none;min-height:100vh;padding:30px 16px;align-items:center;justify-content:center}
+.screen.active{display:flex}
+
+.loginCard{
+    width:360px;max-width:95vw;padding:34px 25px 30px;text-align:center;
+    border:1px solid rgba(246,214,107,.65);border-radius:24px;
+    background:linear-gradient(145deg,rgba(45,6,15,.95),rgba(9,2,6,.97));
+    box-shadow:0 0 35px rgba(255,80,100,.12),inset 0 0 35px rgba(246,214,107,.04);
+    animation:appear .8s ease;
+}
+@keyframes appear{from{opacity:0;transform:translateY(25px) scale(.96)}to{opacity:1;transform:none}}
+.lock{font-size:42px;filter:drop-shadow(0 0 10px #f6d66b)}
+.loginCard h1,.title,.sectionTitle{font-family:Cinzel,serif;color:#f6d66b;letter-spacing:3px}
+.loginCard h1{font-size:25px;line-height:1.35;margin:8px 0}
+.loginCard p{font-size:11px;color:#ddd;margin-bottom:18px}
+.pin{height:25px;display:flex;justify-content:center;gap:8px}
+.dot{width:9px;height:9px;border:1px solid #f6d66b;border-radius:50%}
+.dot.filled{background:#f6d66b;box-shadow:0 0 9px #f6d66b}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:250px;margin:22px auto 0}
+.key{
+    width:48px;height:48px;margin:auto;border-radius:50%;cursor:pointer;
+    color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.45);
+    transition:.2s;
+}
+.key:hover{border-color:#f6d66b;box-shadow:0 0 15px rgba(246,214,107,.35);transform:scale(1.07)}
+.key:active{transform:scale(.92)}
+.error{height:20px;margin-top:14px;color:#ff7187;font-size:12px}
+
+.container{width:100%;max-width:1120px;margin:auto}
+.title{text-align:center;font-size:34px;text-shadow:0 0 18px rgba(246,214,107,.35);margin-bottom:22px}
+.subtitle{text-align:center;color:#ddd;font-size:12px;margin:-12px 0 25px}
+
+.counter{display:flex;justify-content:center;flex-wrap:wrap;gap:10px}
+.time{
+    min-width:88px;text-align:center;padding:13px 10px;border-radius:12px;
+    background:linear-gradient(145deg,rgba(42,6,14,.88),rgba(9,2,6,.9));
+    border:1px solid rgba(246,214,107,.55);
+}
+.time b{display:block;font-family:Cinzel,serif;color:#f6d66b;font-size:24px}
+.time span{font-size:8px;color:#ddd;letter-spacing:1px}
+
+.nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:25px 0}
+.btn{
+    border:1px solid rgba(246,214,107,.7);background:rgba(45,6,15,.7);color:#fff;
+    padding:10px 20px;border-radius:30px;cursor:pointer;font-size:11px;transition:.3s;
+}
+.btn:hover,.btn.active{background:#f6d66b;color:#26050d;box-shadow:0 0 18px rgba(246,214,107,.35)}
+.fileBtn{position:relative;overflow:hidden}
+.fileBtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+
+.page{display:none;animation:pageIn .55s ease}
+.page.active{display:block}
+@keyframes pageIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.sectionTitle{text-align:center;font-size:28px;margin:10px 0 25px}
+
+.hero{
+    display:grid;grid-template-columns:1.15fr .85fr;gap:25px;align-items:center;
+    margin-top:15px;
+}
+.heroText{
+    padding:30px;border-radius:20px;border:1px solid rgba(246,214,107,.35);
+    background:rgba(30,4,11,.65);box-shadow:inset 0 0 30px rgba(246,214,107,.03)
+}
+.heroText h2{font-family:Cinzel,serif;color:#f6d66b;font-size:29px;line-height:1.35;margin-bottom:14px}
+.heroText p{font-size:13px;line-height:1.9;color:#eee}
+.heroText .small{color:#f6d66b;font-size:11px;margin-top:15px}
+.heroPhoto{
+    height:390px;border-radius:22px;overflow:hidden;border:1px solid rgba(246,214,107,.6);
+    background:linear-gradient(145deg,#28060e,#090207);position:relative;
+}
+.heroPhoto img{width:100%;height:100%;object-fit:cover;display:none}
+.heroPhoto.hasImage img{display:block}
+.photoPlaceholder{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;color:#cfc5c8}
+.heroPhoto.hasImage .photoPlaceholder{display:none}
+
+.carousel{
+    position:relative;max-width:850px;height:480px;margin:auto;overflow:hidden;border-radius:22px;
+    border:1px solid rgba(246,214,107,.6);background:#090207;box-shadow:0 0 35px rgba(255,80,100,.10)
+}
+.slide{display:none;width:100%;height:100%;position:relative}
+.slide.active{display:block;animation:fade .6s}
+.slide img{width:100%;height:100%;object-fit:contain;background:#090207}
+.slideEmpty{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:25px;color:#bbb}
+.caption{
+    position:absolute;left:0;right:0;bottom:0;padding:35px 20px 18px;
+    background:linear-gradient(transparent,rgba(0,0,0,.88));text-align:center;
+}
+.caption h3{font-family:Cinzel,serif;color:#f6d66b}
+.caption p{font-size:11px;color:#eee;margin-top:4px}
+.arrow{
+    position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:42px;height:42px;border-radius:50%;
+    border:1px solid rgba(246,214,107,.8);background:rgba(0,0,0,.55);color:#fff;cursor:pointer;font-size:20px
+}
+.arrow:hover{background:#f6d66b;color:#26050d}
+.prev{left:14px}.next{right:14px}
+.dots{display:flex;justify-content:center;gap:7px;margin:14px}
+.dotSlide{width:7px;height:7px;border-radius:50%;background:#555;cursor:pointer}
+.dotSlide.active{background:#f6d66b;box-shadow:0 0 8px #f6d66b}
+@keyframes fade{from{opacity:.4}to{opacity:1}}
+
+.memoryGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.memory{height:300px;perspective:1000px;cursor:pointer}
+.memoryInner{height:100%;position:relative;transform-style:preserve-3d;transition:.75s}
+.memory.flipped .memoryInner{transform:rotateY(180deg)}
+.memoryFront,.memoryBack{
+    position:absolute;inset:0;backface-visibility:hidden;border-radius:18px;overflow:hidden;
+    border:1px solid rgba(246,214,107,.6)
+}
+.memoryFront{background:linear-gradient(145deg,#320914,#0b0206);display:flex;align-items:center;justify-content:center;text-align:center}
+.memoryFront .icon{font-size:60px}
+.memoryFront h3{position:absolute;bottom:18px;font-family:Cinzel,serif;color:#f6d66b;font-size:16px}
+.memoryBack{
+    transform:rotateY(180deg);padding:25px;background:linear-gradient(145deg,#26050d,#080105);
+    display:flex;align-items:center;justify-content:center;text-align:center
+}
+.memoryBack p{font-size:12px;line-height:1.9;color:#eee}
+.memoryBack span{display:block;font-family:Cinzel,serif;color:#f6d66b;font-size:19px;margin-bottom:10px}
+
+.letter{
+    max-width:760px;margin:auto;padding:40px;border-radius:20px;
+    background:linear-gradient(145deg,rgba(40,6,14,.94),rgba(10,2,6,.96));
+    border:1px solid rgba(246,214,107,.6);box-shadow:0 0 35px rgba(255,80,100,.09)
+}
+.letter p{font-size:13px;line-height:2;margin-bottom:18px;color:#eee}
+.signature{text-align:right!important;color:#f6d66b!important;font-family:Cinzel,serif;font-size:24px!important}
+
+.musicBox{
+    max-width:650px;margin:0 auto 25px;padding:16px;border:1px solid rgba(246,214,107,.35);
+    border-radius:16px;background:rgba(30,4,11,.55);text-align:center
+}
+.musicBox h3{font-family:Cinzel,serif;color:#f6d66b;font-size:17px;margin-bottom:10px}
+audio{width:100%;height:35px}
+.musicStatus{font-size:10px;color:#bbb;margin-top:8px}
+
+.photoManager{
+    margin-top:25px;padding:16px;border:1px solid rgba(246,214,107,.3);border-radius:16px;
+    background:rgba(30,4,11,.5);text-align:center
+}
+.photoManager p{font-size:10px;color:#bbb;margin-bottom:10px}
+
+.footer{text-align:center;color:#888;font-size:10px;margin:30px 0 10px}
+.footer span{color:#f6d66b}
+
+.hearts{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+.heart{position:absolute;bottom:-30px;color:#ff5b80;animation:heartFloat linear forwards;filter:drop-shadow(0 0 6px rgba(255,80,120,.4))}
+@keyframes heartFloat{to{transform:translateY(-115vh) rotate(360deg);opacity:0}}
+
+@media(max-width:800px){
+    .hero{grid-template-columns:1fr}
+    .heroPhoto{height:330px}
+    .memoryGrid{grid-template-columns:1fr;max-width:340px;margin:auto}
+    .carousel{height:390px}
+}
+@media(max-width:450px){
+    .title{font-size:25px}
+    .time{min-width:68px;padding:10px 5px}
+    .time b{font-size:18px}
+    .time span{font-size:7px}
+    .carousel{height:330px}
+    .letter{padding:24px}
+}
+</style>
+</head>
+
+<body>
+
+<div id="stars"></div>
+<div class="hearts" id="hearts"></div>
+
+<!-- Pantalla de carga -->
+<div id="loader">
+    <div class="loaderBox">
+        <div class="loaderHeart">❤️</div>
+        <h2>UN DÍA MUY ESPECIAL!!</h2>
+        <div class="loaderLine"><span></span></div>
+        <p style="font-size:10px;color:#aaa">Preparando una sorpresa de cumpleaños...</p>
+    </div>
+</div>
+
+<!-- PIN -->
+<section class="screen active" id="loginScreen">
+    <div class="loginCard">
+        <div class="lock">🔐</div>
+        <h1>FELIZ<br>CUMPLEAÑOS</h1>
+        <p>Ingresa la fecha de su cumpleaños</p>
+
+        <div class="pin" id="pinDots">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+
+        <div class="keypad">
+            <button class="key" onclick="pressKey('1')">1</button>
+            <button class="key" onclick="pressKey('2')">2</button>
+            <button class="key" onclick="pressKey('3')">3</button>
+            <button class="key" onclick="pressKey('4')">4</button>
+            <button class="key" onclick="pressKey('5')">5</button>
+            <button class="key" onclick="pressKey('6')">6</button>
+            <button class="key" onclick="pressKey('7')">7</button>
+            <button class="key" onclick="pressKey('8')">8</button>
+            <button class="key" onclick="pressKey('9')">9</button>
+            <button class="key" onclick="clearPin()">C</button>
+            <button class="key" onclick="pressKey('0')">0</button>
+            <button class="key" onclick="deleteKey()">⌫</button>
+        </div>
+        <div class="error" id="error"></div>
+    </div>
+</section>
+
+<!-- Principal -->
+<section class="screen" id="mainScreen">
+<div class="container">
+
+    <h1 class="title">HOY CELEBRAMOS SU DÍA</h1>
+    <p class="subtitle">Una pequeña sorpresa hecha especialmente para celebrar su cumpleaños my love ❤️</p>
+
+    <div class="counter">
+        <div class="time"><b id="days">0</b><span>DÍAS</span></div>
+        <div class="time"><b id="hours">0</b><span>HORAS</span></div>
+        <div class="time"><b id="minutes">0</b><span>MINUTOS</span></div>
+        <div class="time"><b id="seconds">0</b><span>SEGUNDOS</span></div>
+    </div>
+
+    <nav class="nav">
+        <button class="btn active" onclick="showPage('home',this)">INICIO</button>
+        <button class="btn" onclick="showPage('photos',this)">RECUERDOS ESPECIALES</button>
+        <button class="btn" onclick="showPage('memories',this)">MOMENTOS PARA RECORDAR</button>
+        <button class="btn" onclick="showPage('letter',this)">MENSAJE</button>
+    </nav>
+
+    <!-- INICIO -->
+    <div class="page active" id="home">
+        <div class="hero">
+            <div class="heroText">
+                <h2>¡Hoy es un día para celebrar a una persona tan increíble! 🎂</h2>
+                <p>
+                    Hoy quiero celebrar su vida, sus sueños y todos los momentos bonitos que ha compartido.
+                    Esta página es una pequeña sorpresa para recordarle lo especial que es
+                    y deseárle un cumpleaños lleno de alegría.
+                </p>
+                <p class="small">Explora las secciones de arriba para descubrir su sorpresa 🎁</p>
+            </div>
+
+            <div class="heroPhoto" id="heroPhoto">
+                <div class="photoPlaceholder">
+                    <div>
+                        <div style="font-size:65px">📷</div>
+                        <p>Su foto favorita aparecerá aquí</p>
+                        <small>Usa "Cargar fotos" abajo para agregar sus mejores recuerdos.</small>
+                    </div>
+                </div>
+                <img id="heroImg" alt="Foto principal">
+            </div>
+        </div>
+
+        <div class="musicBox" style="margin-top:25px">
+            <h3>🎁 Una sorpresa para usted</h3>
+            <div class="musicStatus">Que este nuevo año de vida esté lleno de momentos increíbles. ¡Feliz cumpleaños! 🎂</div>
+        </div>
+
+        <div class="musicBox" style="margin-top:25px">
+            <h3>🎵 🎵 Canción para su cumpleaños</h3>
+            <label class="btn fileBtn">
+                CARGAR CANCIÓN
+                <input type="file" id="musicInput" accept="audio/*">
+            </label>
+            <audio id="audio" controls></audio>
+            <div class="musicStatus" id="musicStatus">Puedes seleccionar una canción especial desde tu computadora.</div>
+        </div>
+    </div>
+
+    <!-- FOTOS -->
+    <div class="page" id="photos">
+        <h2 class="sectionTitle">RECUERDOS ESPECIALES</h2>
+
+        <div class="carousel" id="carousel">
+            <div class="slide active">
+                <div class="slideEmpty">
+                    <div>
+                        <div style="font-size:70px">📷</div>
+                        <p>Carga tus fotos para comenzar la sorpresa</p>
+                    </div>
+                </div>
+            </div>
+            <button class="arrow prev" onclick="prevSlide()">‹</button>
+            <button class="arrow next" onclick="nextSlide()">›</button>
+        </div>
+
+        <div class="dots" id="dots"></div>
+
+        
+    </div>
+
+    <div class="page" id="memories">
+        <h2 class="sectionTitle">MOMENTOS PARA RECORDAR ESPECIALES</h2>
+
+        <div class="memoryGrid">
+            <div class="memory" onclick="this.classList.toggle('flipped')">
+                <div class="memoryInner">
+                    <div class="memoryFront">
+                        <div class="icon">❤️</div>
+                        <h3>UN RECUERDO FAVORITO</h3>
+                    </div>
+                    <div class="memoryBack">
+                        <p><span>❤️ ❤️ Un recuerdo especial</span>Escribe aquí un recuerdo bonito que quieras destacar en este cumpleaños.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="memory" onclick="this.classList.toggle('flipped')">
+                <div class="memoryInner">
+                    <div class="memoryFront">
+                        <div class="icon">✨</div>
+                        <h3>UN MOMENTO INOLVIDABLE</h3>
+                    </div>
+                    <div class="memoryBack">
+                        <p><span>✨ Un momento especial</span>Cuenta aquí una experiencia, viaje, salida o momento que te haya hecho sonreír.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="memory" onclick="this.classList.toggle('flipped')">
+                <div class="memoryInner">
+                    <div class="memoryFront">
+                        <div class="icon">💖</div>
+                        <h3>NUEVOS SUEÑOS</h3>
+                    </div>
+                    <div class="memoryBack">
+                        <p><span>💖 💖 Lo que viene</span>Escribe aquí tus deseos, sueños y todo lo bonito que esperas vivir en el próximo año.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MENSAJE -->
+    <div class="page" id="letter">
+        <h2 class="sectionTitle">UN MENSAJE PARA LA PRINCESA</h2>
+
+        <div class="letter">
+            <p>¡Feliz cumpleaños mi princesa! 🎂</p>
+
+            <p>
+                Hoy podría simplemente decirle “feliz cumpleaños” y desearle lo mejor, pero siento que una fecha tan
+                importante como esta merece mucho más que unas cuantas palabras. Por eso quiero aprovechar este
+                momento para recordarle lo importante que usted es para mí y todo lo que deseo para su vida.
+            </p>
+
+            <p>
+                A veces la vida nos permite conocer personas que llegan sin avisar y que, poco a poco, terminan
+                convirtiéndose en una parte muy importante de nuestros días. Usted es una de esas personas para mí. Y
+                aunque quizás no siempre encuentre las palabras exactas para explicarlo, quiero que sepa que tenerla en mi
+                vida significa muchísimo.
+            </p>
+
+            <p>
+               Mi amor, deseo que nunca olvide lo especial que es. Espero que siempre tenga la fuerza para perseguir sus
+               sueños y que nunca permita que un mal momento le haga pensar que no puede conseguir aquello que
+               desea. Usted tiene muchísimo por delante y deseo sinceramente que pueda disfrutar cada etapa de su vida.
+            </p>
+            <p>
+                Quiero verla feliz. Quiero verla cumplir sus metas, celebrar sus éxitos y sentirse orgullosa de todo lo que vaya
+                consiguiendo. Y cuando algún día mire hacia atrás, espero que pueda recordar esta etapa de su vida con una
+                sonrisa y pensar en todas las cosas bonitas que vivió.
+            </p>
+            <p>
+                Gracias por cada momento que hemos compartido. Gracias por las risas, por las conversaciones, por los
+                recuerdos y hasta por esos pequeños momentos que quizás nunca imaginamos que terminarían significando
+                tanto. Todo eso forma parte de lo que hace que usted sea una persona tan importante para mí.
+            </p>
+            <p> 
+               Hoy no solamente deseo que tenga un cumpleaños bonito. Deseo que tenga una vida bonita. Una vida
+               llena de sueños cumplidos, personas sinceras, momentos inolvidables y muchísimas razones para despertar
+               cada día con una sonrisa.
+            </p>
+            <p>
+                Y si algún día llega a sentir que las cosas se ponen difíciles, espero que recuerde estas palabras y recuerde
+                que hay alguien que cree muchísimo en usted y que desea verla bien. Alguien que se alegra de sus alegrías y
+                que desea de corazón que nunca deje de luchar por aquello que la hace feliz.
+            </p>
+            <br>
+                <br>Feliz cumpleaños, mi amor. ❤️
+            </p>
+            <p> 
+                Gracias por existir, por ser esa persona tan especial y por formar parte de mi vida. Espero que este nuevo
+                año le traiga todo aquello que su corazón desea y muchísimo más.
+            </p>
+            <p>
+                Hoy celebre su vida, sonría, disfrute cada momento y déjese querer por todas las personas que la rodean.
+                Porque usted merece todo el cariño, toda la felicidad y todas las cosas bonitas que puedan llegar a su vida.
+            </p>
+            <p>
+                La quiero muchísimo, mi amor. Feliz cumpleañooooos. 🥹❤️🎂✨
+            </p>
+
+            <p class="signature">Con mucho cariño su principe❤️</p>
+        </div>
+    </div>
+
+    <div class="footer">Hecho con <span>❤️</span> para hacer su cumpleaños un poquito mucho más especial.🙈</div>
+</div>
+</section>
+
+<script>
+
+
+
+const PIN_CORRECTO = "230820"; // Ejemplo: 23/08/2020. Cámbialo por la fecha que quieras.
+
+/*
+   FECHA DE INICIO
+   Año, mes-1, día, hora, minuto, segundo
+   Ejemplo: agosto = 7
+*/
+const FECHA_CUMPLE = new Date(2026, 8, 7, 0, 0, 0);
+
+
+
+const stars = document.getElementById("stars");
+for(let i=0;i<240;i++){
+    const s=document.createElement("div");
+    s.className="star";
+    s.style.left=Math.random()*100+"%";
+    s.style.top=Math.random()*100+"%";
+    const size=Math.random()*2+1;
+    s.style.width=size+"px";
+    s.style.height=size+"px";
+    s.style.animationDelay=Math.random()*4+"s";
+    s.style.animationDuration=(2+Math.random()*4)+"s";
+    stars.appendChild(s);
+}
+
+
+/* =====================================================
+   CARGA
+   ===================================================== */
+window.addEventListener("load",()=>{
+    setTimeout(()=>document.getElementById("loader").classList.add("hide"),1900);
+});
+
+
+/* =====================================================
+   PIN
+   ===================================================== */
+let pin="";
+function pressKey(n){
+    if(pin.length>=6)return;
+    pin+=n;
+    updateDots();
+    document.getElementById("error").textContent="";
+    if(pin.length===PIN_CORRECTO.length)setTimeout(checkPin,250);
+}
+function updateDots(){
+    document.querySelectorAll(".dot").forEach((d,i)=>{
+        d.classList.toggle("filled",i<pin.length);
+    });
+}
+function clearPin(){
+    pin="";
+    updateDots();
+    document.getElementById("error").textContent="";
+}
+function deleteKey(){
+    pin=pin.slice(0,-1);
+    updateDots();
+}
+function checkPin(){
+    if(pin===PIN_CORRECTO){
+        document.getElementById("loginScreen").classList.remove("active");
+        document.getElementById("mainScreen").classList.add("active");
+        burstHearts();
+    }else{
+        document.getElementById("error").textContent="El código no es correcto 🎂";
+        pin="";
+        updateDots();
+    }
+}
+document.addEventListener("keydown",e=>{
+    if(!document.getElementById("loginScreen").classList.contains("active"))return;
+    if(/^[0-9]$/.test(e.key))pressKey(e.key);
+    if(e.key==="Backspace")deleteKey();
+    if(e.key==="Escape")clearPin();
+});
+
+
+/* =====================================================
+   CUENTA REGRESIVA
+   ===================================================== */
+function updateCounter(){
+    const now = new Date();
+    let target = new Date(FECHA_CUMPLE);
+
+    // Si el cumpleaños de este año ya pasó, cuenta hacia el próximo año.
+    if(target <= now){
+        target.setFullYear(now.getFullYear() + 1);
+    }
+
+    let diff = target - now;
+    const days = Math.floor(diff / 86400000);
+    diff %= 86400000;
+    const hours = Math.floor(diff / 3600000);
+    diff %= 3600000;
+    const minutes = Math.floor(diff / 60000);
+    diff %= 60000;
+    const seconds = Math.floor(diff / 1000);
+
+    document.getElementById("days").textContent = days;
+    document.getElementById("hours").textContent = hours;
+    document.getElementById("minutes").textContent = minutes;
+    document.getElementById("seconds").textContent = seconds;
+}
+updateCounter();
+setInterval(updateCounter,1000);
+
+
+/* =====================================================
+   NAVEGACIÓN
+   ===================================================== */
+function showPage(id,button){
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    document.querySelectorAll(".nav .btn").forEach(b=>b.classList.remove("active"));
+    if(button)button.classList.add("active");
+    window.scrollTo({top:0,behavior:"smooth"});
+}
+
+
+/* =====================================================
+   FOTOS: CARGA AUTOMÁTICA DESDE LA CARPETA "imagenes"
+   ===================================================== */
+let photos=[];
+let currentSlide=0;
+const imagenesCarpeta = [
+    "foto1.jpeg",
+    "foto2.jpeg",
+    "foto3.jpeg",
+    "foto4.jpeg",
+    "foto5.jpeg",
+    "foto6.jpeg",
+    "foto7.jpeg",
+    "foto8.jpeg",
+    "foto9.jpeg",
+    "foto10.jpeg",
+    "foto11.jpeg",
+    "foto12.jpeg",
+    "foto13.jpeg",
+    "foto14.jpeg",
+    "foto15.jpeg",
+    "foto16.jpeg",
+];
+
+function cargarFotosAutomaticamente(){
+    photos = imagenesCarpeta.map((nombre,index)=>({
+        url: "imagenes/" + encodeURIComponent(nombre),
+        name: nombre,
+        title: "Recuerdo " + (index + 1)
+    }));
+
+    // Solo conservar imágenes que realmente existan.
+    const comprobaciones = photos.map(photo => new Promise(resolve=>{
+        const img = new Image();
+        img.onload = () => resolve(photo);
+        img.onerror = () => resolve(null);
+        img.src = photo.url;
+    }));
+
+    Promise.all(comprobaciones).then(resultados=>{
+        photos = resultados.filter(Boolean);
+        buildCarousel();
+
+        if(photos.length){
+            const hero=document.getElementById("heroPhoto");
+            const heroImg=document.getElementById("heroImg");
+            heroImg.src=photos[0].url;
+            heroImg.alt=photos[0].name;
+            hero.classList.add("hasImage");
+        }
+    });
+}
+
+// También se mantiene la opción de seleccionar fotos manualmente.
+
+// Cargar automáticamente las imágenes al abrir la página.
+cargarFotosAutomaticamente();
+
+function buildCarousel(){
+    const carousel=document.getElementById("carousel");
+    carousel.querySelectorAll(".slide").forEach(s=>s.remove());
+
+    photos.forEach((photo,index)=>{
+        const slide=document.createElement("div");
+        slide.className="slide"+(index===0?" active":"");
+        slide.innerHTML=`
+            <img src="${photo.url}" alt="${escapeHtml(photo.name)}">
+        `;
+        carousel.insertBefore(slide,carousel.querySelector(".prev"));
+    });
+
+    currentSlide=0;
+    buildDots();
+}
+
+function buildDots(){
+    const dots=document.getElementById("dots");
+    dots.innerHTML="";
+    photos.forEach((_,i)=>{
+        const d=document.createElement("span");
+        d.className="dotSlide"+(i===0?" active":"");
+        d.onclick=()=>goSlide(i);
+        dots.appendChild(d);
+    });
+}
+
+function goSlide(index){
+    if(!photos.length)return;
+    const slides=document.querySelectorAll("#carousel .slide");
+    slides.forEach(s=>s.classList.remove("active"));
+    currentSlide=(index+photos.length)%photos.length;
+    slides[currentSlide].classList.add("active");
+
+    document.querySelectorAll(".dotSlide").forEach((d,i)=>{
+        d.classList.toggle("active",i===currentSlide);
+    });
+}
+function nextSlide(){goSlide(currentSlide+1)}
+function prevSlide(){goSlide(currentSlide-1)}
+
+let autoSlide=setInterval(()=>{
+    if(photos.length>1)nextSlide();
+},4500);
+
+
+/* =====================================================
+   MÚSICA
+   ===================================================== */
+document.getElementById("musicInput").addEventListener("change",e=>{
+    const file=e.target.files[0];
+    if(!file)return;
+    const audio=document.getElementById("audio");
+    audio.src=URL.createObjectURL(file);
+    document.getElementById("musicStatus").textContent=
+        "Canción cargada: "+file.name+" — pulsa ▶ para reproducir.";
+});
+
+
+/* =====================================================
+   CORAZONES
+   ===================================================== */
+function heart(){
+    const h=document.createElement("div");
+    h.className="heart";
+    h.textContent=Math.random()>.5?"❤️":"💖";
+    h.style.left=Math.random()*1000+"vw";
+    h.style.fontSize=(12+Math.random()*20)+"px";
+    h.style.animationDuration=(5+Math.random()*5)+"s";
+    document.getElementById("hearts").appendChild(h);
+    setTimeout(()=>h.remove(),10000);
+}
+function burstHearts(){
+    for(let i=0;i<25;i++)setTimeout(heart,i*100);
+}
+setInterval(()=>{
+    if(document.getElementById("mainScreen").classList.contains("active"))heart();
+},1500);
+
+
+/* Evita HTML no deseado en nombres de archivos */
+function escapeHtml(text){
+    const div=document.createElement("div");
+    div.textContent=text;
+    return div.innerHTML;
+}
+</script>
+</body>
+</html>
