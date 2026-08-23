@@ -306,8 +306,8 @@ audio{width:100%;height:35px}
 
         <div class="musicBox" style="margin-top:25px">
             <h3>🎵 Una canción especial de usted</h3>
-            <audio id="audio" loop controls playsinline>
-                <source src="musica/canción.mp3" type="audio/mpeg">
+            <audio id="audio" loop controls playsinline webkit-playsinline>
+                <source src="música/canción.mp3" type="audio/mpeg">
           </audio>
             <div class="musicStatus" id="musicStatus">
                 🎶 Esta canción estará sonando de fondo durante su sorpresa ❤️
@@ -490,10 +490,43 @@ window.addEventListener("load",()=>{
 
 
 /* =====================================================
+   DESBLOQUEO DE AUDIO PARA MÓVILES
+   Los navegadores móviles solo permiten reproducir audio
+   automáticamente si play() se llama de forma síncrona
+   dentro de un evento real del usuario (clic/toque).
+   Aquí lo "desbloqueamos" en el primer toque del teclado.
+   ===================================================== */
+let audioUnlocked = false;
+function unlockAudio(){
+    if(audioUnlocked) return;
+    const audio = document.getElementById("audio");
+    if(!audio) return;
+    audio.muted = true;
+    const p = audio.play();
+    if(p !== undefined){
+        p.then(()=>{
+            audio.pause();
+            audio.currentTime = 0;
+            audio.muted = false;
+            audioUnlocked = true;
+        }).catch(()=>{
+            // Si falla el desbloqueo, lo dejamos sin silenciar
+            // para que al menos el botón manual funcione bien.
+            audio.muted = false;
+        });
+    } else {
+        audio.muted = false;
+        audioUnlocked = true;
+    }
+}
+
+
+/* =====================================================
    PIN
    ===================================================== */
 let pin="";
 function pressKey(n){
+    unlockAudio(); // Desbloquea el audio en la primera interacción real del usuario
     if(pin.length>=6)return;
     pin+=n;
     updateDots();
@@ -523,10 +556,13 @@ function checkPin(){
         // Iniciar la canción automáticamente al desbloquear la página.
         const audio = document.getElementById("audio");
         audio.volume = 0.5;
-        audio.play().catch(() => {
-        document.getElementById("musicStatus").innerHTML =
-        "🎵 Toca el botón ▶ para iniciar la canción";
-});
+        audio.play().then(()=>{
+            document.getElementById("musicStatus").innerHTML =
+            "🎶 Esta canción estará sonando de fondo durante su sorpresa ❤️";
+        }).catch(() => {
+            document.getElementById("musicStatus").innerHTML =
+            "🎵 Toca el botón ▶ para iniciar la canción";
+        });
         burstHearts();
 
     }else{
