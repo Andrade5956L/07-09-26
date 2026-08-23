@@ -259,7 +259,7 @@ audio{width:100%;height:35px}
 <div class="container">
 
     <h1 class="title">HOY CELEBRAMOS SU DÍA</h1>
-    <p class="subtitle">Una pequeña sorpresa hecha especialmente para celebrar su cumpleaños my love ❤️</p>
+    <p class="subtitle">Una pequeña sorpresa hecha especialmente para celebrar su cumpleaños doctora ❤️</p>
 
     <div class="counter">
         <div class="time"><b id="days">0</b><span>DÍAS</span></div>
@@ -270,8 +270,8 @@ audio{width:100%;height:35px}
 
     <nav class="nav">
         <button class="btn active" onclick="showPage('home',this)">INICIO</button>
-        <button class="btn" onclick="showPage('photos',this)">RECUERDOS ESPECIALES</button>
-        <button class="btn" onclick="showPage('memories',this)">MOMENTOS PARA RECORDAR</button>
+        <button class="btn" onclick="showPage('photos',this)">LA MEJOR DE TODAS</button>
+        <button class="btn" onclick="showPage('memories',this)">MOMENTOS</button>
         <button class="btn" onclick="showPage('letter',this)">MENSAJE</button>
     </nav>
 
@@ -285,7 +285,6 @@ audio{width:100%;height:35px}
                     Esta página es una pequeña sorpresa para recordarle lo especial que es
                     y deseárle un cumpleaños lleno de alegría.
                 </p>
-                <p class="small">Explora las secciones de arriba para descubrir su sorpresa 🎁</p>
             </div>
 
             <div class="heroPhoto" id="heroPhoto">
@@ -306,13 +305,14 @@ audio{width:100%;height:35px}
         </div>
 
         <div class="musicBox" style="margin-top:25px">
-            <h3>🎵 🎵 Canción para su cumpleaños</h3>
-            <label class="btn fileBtn">
-                CARGAR CANCIÓN
-                <input type="file" id="musicInput" accept="audio/*">
-            </label>
-            <audio id="audio" controls></audio>
-            <div class="musicStatus" id="musicStatus">Puedes seleccionar una canción especial desde tu computadora.</div>
+            <h3>🎵 Una canción especial de usted</h3>
+            <audio id="audio" loop>
+                <source src="musica/cancion.mp3" type="audio/mpeg">
+                Su navegador no puede reproducir audio.
+            </audio>
+            <div class="musicStatus" id="musicStatus">
+                🎶 Esta canción estará sonando de fondo durante su sorpresa ❤️
+            </div>
         </div>
     </div>
 
@@ -345,7 +345,11 @@ audio{width:100%;height:35px}
             <div class="memory" onclick="this.classList.toggle('flipped')">
                 <div class="memoryInner">
                     <div class="memoryFront">
-                        <div class="icon">❤️</div>
+                        <div class="image">
+                            <img src="imagenes/img1.png" alt="Un recuerdo especial" style="width:80%;height:90%;object-fit:cover">
+
+
+                        </div>
                         <h3>UN RECUERDO FAVORITO</h3>
                     </div>
                     <div class="memoryBack">
@@ -452,7 +456,7 @@ audio{width:100%;height:35px}
 
 
 
-const PIN_CORRECTO = "230820"; // Ejemplo: 23/08/2020. Cámbialo por la fecha que quieras.
+const PIN_CORRECTO = "070907"; // Ejemplo: 23/08/2020. Cámbialo por la fecha que quieras.
 
 /*
    FECHA DE INICIO
@@ -513,9 +517,20 @@ function deleteKey(){
 }
 function checkPin(){
     if(pin===PIN_CORRECTO){
+
         document.getElementById("loginScreen").classList.remove("active");
         document.getElementById("mainScreen").classList.add("active");
+
+        // Iniciar la canción automáticamente al desbloquear la página.
+        const audio = document.getElementById("audio");
+        audio.volume = 0.5;
+
+        audio.play().catch(error => {
+            console.log("El navegador bloqueó la reproducción automática:", error);
+        });
+
         burstHearts();
+
     }else{
         document.getElementById("error").textContent="El código no es correcto 🎂";
         pin="";
@@ -625,8 +640,6 @@ function cargarFotosAutomaticamente(){
     });
 }
 
-// También se mantiene la opción de seleccionar fotos manualmente.
-
 // Cargar automáticamente las imágenes al abrir la página.
 cargarFotosAutomaticamente();
 
@@ -676,39 +689,25 @@ let autoSlide=setInterval(()=>{
     if(photos.length>1)nextSlide();
 },4500);
 
-
-/* =====================================================
-   MÚSICA
-   ===================================================== */
-document.getElementById("musicInput").addEventListener("change",e=>{
-    const file=e.target.files[0];
-    if(!file)return;
-    const audio=document.getElementById("audio");
-    audio.src=URL.createObjectURL(file);
-    document.getElementById("musicStatus").textContent=
-        "Canción cargada: "+file.name+" — pulsa ▶ para reproducir.";
-});
-
-
 /* =====================================================
    CORAZONES
    ===================================================== */
 function heart(){
     const h=document.createElement("div");
     h.className="heart";
-    h.textContent=Math.random()>.5?"❤️":"💖";
-    h.style.left=Math.random()*1000+"vw";
+    h.textContent=Math.random()>.5?"🌻":"💜";
+    h.style.left=Math.random()*100+"vw";
     h.style.fontSize=(12+Math.random()*20)+"px";
     h.style.animationDuration=(5+Math.random()*5)+"s";
     document.getElementById("hearts").appendChild(h);
     setTimeout(()=>h.remove(),10000);
 }
 function burstHearts(){
-    for(let i=0;i<25;i++)setTimeout(heart,i*100);
+    for(let i=0;i<55;i++)setTimeout(heart,i*100);
 }
 setInterval(()=>{
     if(document.getElementById("mainScreen").classList.contains("active"))heart();
-},1500);
+},300);
 
 
 /* Evita HTML no deseado en nombres de archivos */
