@@ -306,10 +306,9 @@ audio{width:100%;height:35px}
 
         <div class="musicBox" style="margin-top:25px">
             <h3>🎵 Una canción especial de usted</h3>
-            <audio id="audio" loop>
+            <audio id="audio" loop controls playsinline>
                 <source src="musica/canción.mp3" type="audio/mpeg">
-                Su navegador no puede reproducir audio.
-            </audio>
+          </audio>
             <div class="musicStatus" id="musicStatus">
                 🎶 Esta canción estará sonando de fondo durante su sorpresa ❤️
             </div>
@@ -524,11 +523,10 @@ function checkPin(){
         // Iniciar la canción automáticamente al desbloquear la página.
         const audio = document.getElementById("audio");
         audio.volume = 0.5;
-
-        audio.play().catch(error => {
-            console.log("El navegador bloqueó la reproducción automática:", error);
-        });
-
+        audio.play().catch(() => {
+        document.getElementById("musicStatus").innerHTML =
+        "🎵 Toca el botón ▶ para iniciar la canción";
+});
         burstHearts();
 
     }else{
